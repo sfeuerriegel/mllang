@@ -8,9 +8,11 @@ Unified Machine Learning Language (mlLang)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/mlLang)](https://cran.r-project.org/package=SentimentAnalysis)
 [![Coverage Status](https://img.shields.io/codecov/c/github/sfeuerriegel/mlLang/master.svg)](https://codecov.io/github/sfeuerriegel/mlLang?branch=master)
 -->
-**mlLang** takes hold of the Unified Machine Learning Language (mlLang) inside R.
+**mlLang** takes hold of the Unified Machine Learning Language (mlLang) inside R. We have developed **mlLang** as an XML-based, unified language for machine learning. It standardizes all relevant steps to train superior models: preprocessing operations, model specification, and the tuning process. It thereby makes model tuning reproducible and documents the underlying process.
 
-TODO: motivating text why we need this
+This package ships the converter for R. For this purpose, it implements converters in two directions. (1) It automatically reads files in the unified machine learning language from custom XML files and then constructs a corresponding machine learning model in R. (2) It also supports the other direction an automatically converts machine learning models into XML files according to the unified machine learning language. All machine learning models are built on top of "caret".
+
+Simply load **mlLang** when starting your programming session. Afterwards, all machine learning operations are recorded and written to the disk in an open XML format. This file can be later loaded to reproduce models and training processes from machine learning.
 
 Overview
 --------
@@ -75,9 +77,11 @@ model <- executeMlTask(task, iris)
 #> center scale 
 #> Validation parameters:  
 #> method=repeatedcv;number=5;repeats=6 
-#> Predictors:  Sepal.Length; Sepal.Width; Petal.Length; Petal.Width; 
-#> Target:  Species 
-#> Algorithm:  method=gbm;tuningparameters=c(1, 3, 4);tuningparameters=20;tuningparameters=c(0.2, 0.1);tuningparameters=10 
+#> Predictors:  Sepal.Length; numeric; Sepal.Width; numeric; Petal.Length; numeric; Petal.Width; numeric; 
+#> Target:  Species; factor; 
+#> Metric:  Accuracy 
+#> Missing value handling:  
+#> Plotting:  =;= 
 #> Splitting data 
 #> Begin training
 #> Loading required package: gbm
@@ -105,22 +109,22 @@ model <- executeMlTask(task, iris)
 #> Resampling results across tuning parameters:
 #> 
 #>   shrinkage  n.trees  Accuracy   Kappa    
-#>   0.1        1        0.7933333  0.6900000
-#>   0.1        3        0.8488889  0.7733333
-#>   0.1        4        0.8577778  0.7866667
-#>   0.2        1        0.8577778  0.7866667
-#>   0.2        3        0.8911111  0.8366667
-#>   0.2        4        0.8933333  0.8400000
+#>   0.1        1        0.8866667  0.8300000
+#>   0.1        3        0.9155556  0.8733333
+#>   0.1        4        0.9222222  0.8833333
+#>   0.2        1        0.8755556  0.8133333
+#>   0.2        3        0.9311111  0.8966667
+#>   0.2        4        0.9311111  0.8966667
 #> 
 #> Tuning parameter 'interaction.depth' was held constant at a value of
 #>  20
 #> Tuning parameter 'n.minobsinnode' was held constant at a value of 10
 #> Accuracy was used to select the optimal model using  the largest value.
-#> The final values used for the model were n.trees = 4, interaction.depth
+#> The final values used for the model were n.trees = 3, interaction.depth
 #>  = 20, shrinkage = 0.2 and n.minobsinnode = 10. 
-#> 0.1 0.1 0.1 0.2 0.2 0.2 1 3 4 1 3 4 0.7933333 0.8488889 0.8577778 0.8577778 0.8911111 0.8933333 0.6900000 0.7733333 0.7866667 0.7866667 0.8366667 0.8400000 
-#> Predict test data 
-#> 0.9733333 0.96
+#> 0.1 0.1 0.1 0.2 0.2 0.2 1 3 4 1 3 4 0.8866667 0.9155556 0.9222222 0.8755556 0.9311111 0.9311111 0.8300000 0.8733333 0.8833333 0.8133333 0.8966667 0.8966667 
+#> Predict test data with default caret metric 
+#> 0.72 0.58
 
 summary(model)
 ```
@@ -129,8 +133,8 @@ summary(model)
 
     #>                       var      rel.inf
     #> Petal.Length Petal.Length 1.000000e+02
-    #> Sepal.Width   Sepal.Width 2.999076e-30
-    #> Sepal.Length Sepal.Length 3.623126e-31
+    #> Sepal.Length Sepal.Length 6.259094e-30
+    #> Sepal.Width   Sepal.Width 0.000000e+00
     #> Petal.Width   Petal.Width 0.000000e+00
 
 ### Simultaneous execution of multiple tasks
@@ -145,6 +149,7 @@ library(tidyverse)
 #> Conflicts with tidy packages ----------------------------------------------
 #> arrange():   dplyr, plyr
 #> compact():   purrr, plyr
+#> complete():  tidyr, mice
 #> count():     dplyr, plyr
 #> failwith():  dplyr, plyr
 #> filter():    dplyr, stats
@@ -179,74 +184,11 @@ basename(files[which.max(perf)])
 
 ``` r
 library(BatchJobs)
-#> Loading required package: BBmisc
-#> 
-#> Attaching package: 'BBmisc'
-#> The following objects are masked from 'package:dplyr':
-#> 
-#>     coalesce, collapse
-#> Sourcing configuration file: 'C:/Users/bwpc/Documents/R/win-library/3.3/BatchJobs/etc/BatchJobs_global_config.R'
-#> BatchJobs configuration:
-#>   cluster functions: Interactive
-#>   mail.from: 
-#>   mail.to: 
-#>   mail.start: none
-#>   mail.done: none
-#>   mail.error: none
-#>   default.resources: 
-#>   debug: FALSE
-#>   raise.warnings: FALSE
-#>   staged.queries: TRUE
-#>   max.concurrent.jobs: Inf
-#>   fs.timeout: NA
 
 reg <- makeRegistry(id = "mlLang")
-#> Creating dir: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files
-#> Saving registry: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files/registry.RData
 ids <- scheduleMlTasks(reg, files, iris)
-#> Adding 2 jobs to DB.
-#> Saving conf: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files/conf.RData
-#> Submitting 2 chunks / 2 jobs.
-#> Cluster functions: Interactive.
-#> Auto-mailer settings: start=none, done=none, error=none.
-#> Writing 2 R scripts...
-#> Loading registry: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files/registry.RData
-#> Loading conf:
-#> 2016-12-11 17:18:17: Starting job on node BW-PC.
-#> Auto-mailer settings: start=none, done=none, error=none.
-#> Setting work dir: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret
-#> ########## Executing jid=1 ##########
-#> Timestamp: 2016-12-11 17:18:17
-#> Setting seed: 984887756
-#> Writing result file: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files/jobs/01/1-result.RData
-#> 2016-12-11 17:18:20: All done.
-#> Setting work back to: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret
-#> Memory usage according to gc:
-#> Loading registry: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files/registry.RData
-#> Loading conf:
-#> 2016-12-11 17:18:20: Starting job on node BW-PC.
-#> Auto-mailer settings: start=none, done=none, error=none.
-#> Setting work dir: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret
-#> ########## Executing jid=2 ##########
-#> Timestamp: 2016-12-11 17:18:20
-#> Setting seed: 984887757
-#> Writing result file: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret/mlLang-files/jobs/02/2-result.RData
-#> 2016-12-11 17:18:21: All done.
-#> Setting work back to: C:/Users/bwpc/Desktop/AndreasFrorath/Code/DSLCaret
-#> Memory usage according to gc:
-#> Sending 2 submit messages...
-#> Might take some time, do not interrupt this!
 
 showStatus(reg)
-#> Syncing registry ...
-#> Status for 2 jobs at 2016-12-11 17:18:21
-#> Submitted: 2 (100.00%)
-#> Started:   2 (100.00%)
-#> Running:   0 (  0.00%)
-#> Done:      2 (100.00%)
-#> Errors:    0 (  0.00%)
-#> Expired:   0 (  0.00%)
-#> Time: min=1.00s avg=2.00s max=3.00s
 ```
 
 ``` r
@@ -302,7 +244,7 @@ checkSchema(file_correct) # should work correctly
 file_error <- system.file("XML", "iris_error.xml", package = "mlLang")
 checkSchema(file_error) # should give a warning
 #> Mode file does not satisfy XML schema:
-#> * Error in line  7 :  Element 'Datadescription': This element is not expected. Expected is one of ( DataDescription, Evaluation, Preprocessing, MlAlgorithm ).
+#> * Error in line  25 :  Element 'test': This element is not expected. Expected is one of ( predictedVariable, MissingValueHandling ).
 #> 
 #> [1] FALSE
 ```
