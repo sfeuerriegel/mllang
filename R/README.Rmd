@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 **mlLang** takes hold of the Unified Machine Learning Language (mlLang) inside R. We have developed **mlLang** as an XML-based, unified language for machine learning. It standardizes all relevant steps to train superior models: preprocessing operations, model specification, and the tuning process. It thereby makes model tuning reproducible and documents the underlying process.
 
-This package ships the converter for R. For this purpose, it implements converters in two directions. (1) It automatically reads files in the unified machine learning language from custom XML files and then constructs a corresponding machine learning model in R. (2) It also supports the other direction an automatically converts machine learning models into XML files according to the unified machine learning language. All  machine learning models are built on top of "caret".
+This package ships the converter for R. For this purpose, it implements converters in two directions. (1) It automatically reads files in the unified machine learning language from custom XML files and then constructs a corresponding machine learning model in R. (2) It also supports the other direction and automatically converts machine learning models into XML files according to the unified machine learning language. All  machine learning models are built on top of "caret".
 
 Simply load **mlLang** when starting your programming session. Afterwards, all machine learning operations are recorded and written to the disk in an open XML format. This file can be later loaded to reproduce models and training processes from machine learning.
 
