@@ -26,7 +26,8 @@ Imports:
     XML,
 	  BatchJobs,
 	  Metrics,
-    mlbench
+    mlbench,
+    ModelMetrics
 Suggests:
     testthat,
     knitr,

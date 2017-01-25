@@ -10,7 +10,7 @@ Unified Machine Learning Language (mlLang)
 -->
 **mlLang** takes hold of the Unified Machine Learning Language (mlLang) inside R. We have developed **mlLang** as an XML-based, unified language for machine learning. It standardizes all relevant steps to train superior models: preprocessing operations, model specification, and the tuning process. It thereby makes model tuning reproducible and documents the underlying process.
 
-This package ships the converter for R. For this purpose, it implements converters in two directions. (1) It automatically reads files in the unified machine learning language from custom XML files and then constructs a corresponding machine learning model in R. (2) It also supports the other direction an automatically converts machine learning models into XML files according to the unified machine learning language. All machine learning models are built on top of "caret".
+This package ships the converter for R. For this purpose, it implements converters in two directions. (1) It automatically reads files in the unified machine learning language from custom XML files and then constructs a corresponding machine learning model in R. (2) It also supports the other direction and automatically converts machine learning models into XML files according to the unified machine learning language. All machine learning models are built on top of "caret".
 
 Simply load **mlLang** when starting your programming session. Afterwards, all machine learning operations are recorded and written to the disk in an open XML format. This file can be later loaded to reproduce models and training processes from machine learning.
 
@@ -36,10 +36,10 @@ Using the **devtools** package, you can easily install the latest development ve
 install.packages("devtools")
 
 # Option 1: download and install latest version from ‘GitHub’
-# Not yet supported: devtools::install_github("sfeuerriegel/mlLang")
+devtools::install_github("sfeuerriegel/mlLang/R")
 
 # Option 2: install directly from bundled archive
-devtoos::install_local("mlLang_0.0.1.tar.gz")
+# devtoos::install_local("mlLang_0.0.1.tar.gz")
 ```
 
 Note: A CRAN version has not yet been released.
@@ -109,33 +109,33 @@ model <- executeMlTask(task, iris)
 #> Resampling results across tuning parameters:
 #> 
 #>   shrinkage  n.trees  Accuracy   Kappa    
-#>   0.1        1        0.8866667  0.8300000
-#>   0.1        3        0.9155556  0.8733333
-#>   0.1        4        0.9222222  0.8833333
-#>   0.2        1        0.8755556  0.8133333
-#>   0.2        3        0.9311111  0.8966667
-#>   0.2        4        0.9311111  0.8966667
+#>   0.1        1        0.8622222  0.7933333
+#>   0.1        3        0.9111111  0.8666667
+#>   0.1        4        0.9288889  0.8933333
+#>   0.2        1        0.8777778  0.8166667
+#>   0.2        3        0.8888889  0.8333333
+#>   0.2        4        0.9044444  0.8566667
 #> 
 #> Tuning parameter 'interaction.depth' was held constant at a value of
 #>  20
 #> Tuning parameter 'n.minobsinnode' was held constant at a value of 10
 #> Accuracy was used to select the optimal model using  the largest value.
-#> The final values used for the model were n.trees = 3, interaction.depth
-#>  = 20, shrinkage = 0.2 and n.minobsinnode = 10. 
-#> 0.1 0.1 0.1 0.2 0.2 0.2 1 3 4 1 3 4 0.8866667 0.9155556 0.9222222 0.8755556 0.9311111 0.9311111 0.8300000 0.8733333 0.8833333 0.8133333 0.8966667 0.8966667 
+#> The final values used for the model were n.trees = 4, interaction.depth
+#>  = 20, shrinkage = 0.1 and n.minobsinnode = 10. 
+#> 0.1 0.1 0.1 0.2 0.2 0.2 1 3 4 1 3 4 0.8622222 0.9111111 0.9288889 0.8777778 0.8888889 0.9044444 0.7933333 0.8666667 0.8933333 0.8166667 0.8333333 0.8566667 
 #> Predict test data with default caret metric 
-#> 0.72 0.58
+#> 0.6266667 0.44
 
 summary(model)
 ```
 
 ![](README-unnamed-chunk-4-1.png)
 
-    #>                       var      rel.inf
-    #> Petal.Length Petal.Length 1.000000e+02
-    #> Sepal.Length Sepal.Length 6.259094e-30
-    #> Sepal.Width   Sepal.Width 0.000000e+00
-    #> Petal.Width   Petal.Width 0.000000e+00
+    #>                       var  rel.inf
+    #> Petal.Length Petal.Length 58.72545
+    #> Petal.Width   Petal.Width 30.94658
+    #> Sepal.Width   Sepal.Width 10.32797
+    #> Sepal.Length Sepal.Length  0.00000
 
 ### Simultaneous execution of multiple tasks
 
