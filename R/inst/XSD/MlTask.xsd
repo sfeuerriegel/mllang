@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Evaluation" type="Evaluation"/>
+	<xs:complexType name="Evaluation">
+		<xs:all>
+			<xs:element name="DataSplit" type="DataSplit" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Resampling" type="Resampling" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Metric" type="Metric" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:element name="DataSplit" type="DataSplit"/>
+	<xs:complexType name="DataSplit">
+		<xs:sequence>
+			<xs:element name="partitionRate" type="xs:float" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CrossValidation" type="CrossValidation"/>
+	<xs:complexType name="CrossValidation">
+		<xs:sequence>
+			<xs:element name="numberSubsets" type="xs:int" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="repeats" type="xs:int" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DataSpecification" type="DataSpecification"/>
+	<xs:complexType name="DataSpecification">
+		<xs:all>
+			<xs:element name="predictedVariable" type="Variable" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Predictors" type="Predictors" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="MissingValueHandling" type="MissingValueHandling" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:element name="Task" type="Task"/>
+	<xs:complexType name="Task">
+		<xs:all>
+			<xs:element name="DataSpecification" type="DataSpecification" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Evaluation" type="Evaluation" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Preprocessing" type="Preprocessing" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Method" type="Method" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Plotting" type="Plotting" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:simpleType name="Metric">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ROC"/>
+			<xs:enumeration value="Accuracy"/>
+			<xs:enumeration value="RMSE"/>
+			<xs:enumeration value="Kappa"/>
+			<xs:enumeration value="Rsquared"/>
+			<xs:enumeration value="automatic"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MissingValueHandling">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="removeRows"/>
+			<xs:enumeration value="pmm"/>
+			<xs:enumeration value="mean"/>
+			<xs:enumeration value="norm"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="Variable" type="Variable"/>
+	<xs:complexType name="Variable">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="VariableType" type="VariableType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="VariableType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="numeric"/>
+			<xs:enumeration value="factor"/>
+			<xs:enumeration value="automatic"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="Bootstrap" type="Bootstrap"/>
+	<xs:complexType name="Bootstrap">
+		<xs:sequence>
+			<xs:element name="number" type="xs:int" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Plotting" type="Plotting"/>
+	<xs:complexType name="Plotting">
+		<xs:sequence>
+			<xs:element name="Plot" type="Plot" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Plot" type="Plot"/>
+	<xs:complexType name="Plot">
+		<xs:sequence>
+			<xs:element name="filename" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="PlotType" type="PlotType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="PlotType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="plotValidationResults"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="Preprocessing" type="Preprocessing"/>
+	<xs:complexType name="Preprocessing">
+		<xs:sequence>
+			<xs:element name="PreprocessMethod" type="PreprocessMethod" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="PreprocessMethod">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="center"/>
+			<xs:enumeration value="scale"/>
+			<xs:enumeration value="YeoJohnson"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="StochasticGradientBoosting" type="StochasticGradientBoosting"/>
+	<xs:complexType name="StochasticGradientBoosting">
+		<xs:all>
+			<xs:element name="maxTreeDepth" type="IntegerParameterSet" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="minTerminalNodeSize" type="IntegerParameterSet" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="numberTrees" type="IntegerParameterSet" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="shrinkage" type="FloatParameterSet" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:element name="MultiLayerPerceptron" type="MultiLayerPerceptron"/>
+	<xs:complexType name="MultiLayerPerceptron">
+		<xs:all>
+			<xs:element name="hiddenUnits" type="IntegerParameterSet" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="weightDecay" type="FloatParameterSet" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:element name="Method" type="Method"/>
+	<xs:complexType name="Method">
+		<xs:sequence>
+			<xs:choice minOccurs="1" maxOccurs="1">
+				<xs:element name="StochasticGradientBoosting" type="StochasticGradientBoosting" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="MultiLayerPerceptron" type="MultiLayerPerceptron" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="LinearRegression" type="LinearRegression" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="RandomForest" type="RandomForest" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="CART" type="CART" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="LinearSVM" type="LinearSVM" minOccurs="1" maxOccurs="1"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="IntegerParameterSet" type="IntegerParameterSet"/>
+	<xs:complexType name="IntegerParameterSet">
+		<xs:sequence>
+			<xs:element name="value" type="xs:int" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="FloatParameterSet" type="FloatParameterSet"/>
+	<xs:complexType name="FloatParameterSet">
+		<xs:sequence>
+			<xs:element name="value" type="xs:float" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="LinearRegression" type="LinearRegression"/>
+	<xs:complexType name="LinearRegression">
+		<xs:all>
+			<xs:element name="intercept" type="FloatParameterSet" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:element name="Predictors" type="Predictors"/>
+	<xs:complexType name="Predictors">
+		<xs:sequence>
+			<xs:element name="predictor" type="Variable" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Resampling" type="Resampling"/>
+	<xs:complexType name="Resampling">
+		<xs:sequence>
+			<xs:choice minOccurs="1" maxOccurs="1">
+				<xs:element name="CrossValidation" type="CrossValidation" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="Bootstrap" type="Bootstrap" minOccurs="1" maxOccurs="1"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="RandomForest" type="RandomForest"/>
+	<xs:complexType name="RandomForest">
+		<xs:sequence>
+			<xs:element name="randomlySelectedPredictors" type="IntegerParameterSet" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CART" type="CART"/>
+	<xs:complexType name="CART">
+		<xs:sequence>
+			<xs:element name="complexityParameter" type="FloatParameterSet" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="LinearSVM" type="LinearSVM"/>
+	<xs:complexType name="LinearSVM">
+		<xs:sequence>
+			<xs:element name="cost" type="FloatParameterSet" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

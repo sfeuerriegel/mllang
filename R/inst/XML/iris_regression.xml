@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Task
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='MlTask.xsd'>
+
+    <DataSpecification>
+       <Predictors>
+            <predictor>
+                <name>Sepal.Length</name>
+                <VariableType>numeric</VariableType>
+            </predictor>
+            <predictor>
+                <name>Sepal.Width</name>
+                <VariableType>numeric</VariableType>
+            </predictor>
+            <predictor>
+                <name>Petal.Length</name>
+                <VariableType>automatic</VariableType>
+            </predictor>
+            <predictor>
+                <name>Species</name>
+                <VariableType>factor</VariableType>
+            </predictor>
+        </Predictors>
+        <predictedVariable>
+                <name>Petal.Width</name>
+                <VariableType>numeric</VariableType>
+        </predictedVariable>
+    </DataSpecification>
+        
+    <Preprocessing>
+        <PreprocessMethod>center</PreprocessMethod>
+        <PreprocessMethod>scale</PreprocessMethod>
+    </Preprocessing>
+    
+    <Method>                
+        <StochasticGradientBoosting>
+            <numberTrees>
+                <value>1</value>
+                <value>3</value>
+                <value>4</value>
+            </numberTrees>
+            <shrinkage>
+                <value>0.2</value>
+                <value>0.1</value>
+            </shrinkage>
+            <maxTreeDepth>
+                <value>20</value>
+            </maxTreeDepth>
+            <minTerminalNodeSize>
+                <value>10</value>
+            </minTerminalNodeSize>
+        </StochasticGradientBoosting>
+    </Method>
+
+    <Evaluation>
+        <Metric>RMSE</Metric>
+        <DataSplit>
+            <partitionRate>0.5</partitionRate>
+        </DataSplit>
+        <Resampling>
+            <CrossValidation>
+                <numberSubsets>5</numberSubsets>
+                <repeats>6</repeats>
+            </CrossValidation>
+        </Resampling>    
+    </Evaluation>
+
+</Task>

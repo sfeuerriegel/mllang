@@ -1,0 +1,168 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# Unified Machine Learning Language (mlLang)
+
+<!--
+[![Build Status](https://travis-ci.org/sfeuerriegel/SentimentAnalysis.svg?branch=master)](https://travis-ci.org/sfeuerriegel/mlLang)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/mlLang)](https://cran.r-project.org/package=SentimentAnalysis)
+[![Coverage Status](https://img.shields.io/codecov/c/github/sfeuerriegel/mlLang/master.svg)](https://codecov.io/github/sfeuerriegel/mlLang?branch=master)
+-->
+
+**mlLang** takes hold of the Unified Machine Learning Language (mlLang) inside R. 
+
+TODO: motivating text why we need this
+
+## Overview
+
+The most important functions in **mlLang** are:
+
+* `parseMlTask(path)` converts XML files written in the Unified Machine Learning Language into R objects. Afterwards, `executeMlTask(model, data)` runs the corresponding training routines on the given data.
+
+* Additional function replace the training process for machine learning models in order to convert it into XML files following the Unified Machine Learning Language. 
+
+* This package supports the main functionality as provided by the package ``caret`` for machine learning in R. 
+
+To see examples of these functions in use, check out the help pages, the demos and the vignette. 
+
+
+## Installation
+
+Using the **devtools** package, you can easily install the latest development version of **mlLang** with
+
+```{r,eval=FALSE}
+install.packages("devtools")
+
+# Option 1: download and install latest version from ‘GitHub’
+# Not yet supported: devtools::install_github("sfeuerriegel/mlLang")
+
+# Option 2: install directly from bundled archive
+devtoos::install_local("mlLang_0.0.1.tar.gz")
+```
+
+Note: A CRAN version has not yet been released.
+
+## Usage
+
+This section shows the basic functionality of how to work with the Unified Machine Learning Language. First, load the corresponding package **mlLang**. 
+
+```{r, message=FALSE}
+library(mlLang)
+```
+
+## Parser: XML to R
+
+The following code demonstrates some of the functionality provided by **mlLang**. 
+
+```{r}
+# sample data
+data(iris)
+
+# specify sample file
+file <- system.file("XML", "iris_classification.xml", package = "mlLang")
+
+# read task from unified machine learning language
+task <- parseMlTask(file)
+
+# train object with data
+model <- executeMlTask(task, iris)
+
+summary(model)
+```
+
+### Simultaneous execution of multiple tasks
+
+```{r, warning=FALSE}
+library(tidyverse)
+
+set.seed(0)
+in_train <- createDataPartition(iris$Species, p = 0.8, list = FALSE)
+
+files <- list.files(system.file("XML", package = "mlLang"), 
+                    pattern = "iris_classification(.*).xml",
+                    full.names = TRUE)
+models <- runMlTasks(files, iris[in_train, ], logger = NULL)
+
+# best model
+perf <- unlist(lapply(models, 
+                      function(m) {
+                        pred <- predict(m, newdata = iris[-in_train, ] %>% dplyr::select(-Species))
+                        cm <- confusionMatrix(pred, iris[-in_train, "Species"])
+                        return(cm$overall[["Accuracy"]])
+                      }))
+basename(files[which.max(perf)])
+```
+
+### Batch execution
+
+```{r}
+library(BatchJobs)
+
+reg <- makeRegistry(id = "mlLang")
+ids <- scheduleMlTasks(reg, files, iris)
+
+showStatus(reg)
+```
+
+```{r eval=FALSE}
+# retrieve result for first model once completed
+m1 <- loadResult(reg, 1)
+```
+
+
+## Generator: R to XML
+
+```{r}
+set.seed(0)
+
+data(iris)
+predictors <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
+
+task <- newMlTask()
+
+fitControl <- trainControl(method = "repeatedcv",
+                           number = 10,
+                           repeats = 3)
+
+model <- task$train(x = iris[, predictors], y = iris$Species,
+                    y_name = "Species",
+                    method = "gbm",
+                    preProcess = c("center", "scale"),
+                    trControl = fitControl,
+                    verbose = FALSE)
+
+summary(model)
+
+write(task, "iris_classification.xml")
+unlink("iris_classification.xml")
+```
+
+
+## XML syntax of the Unified Machine Learning Language
+
+
+```{r}
+file_correct <- system.file("XML", "iris_classification.xml", package = "mlLang")
+checkSchema(file_correct) # should work correctly
+
+file_error <- system.file("XML", "iris_error.xml", package = "mlLang")
+checkSchema(file_error) # should give a warning
+```
+
+
+## License
+
+**mlLang** is released under the [MIT License](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2016 Andreas Frorath & Stefan Feuerriegel
