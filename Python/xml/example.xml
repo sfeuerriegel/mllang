@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Task
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='MlTask.xsd'>
+
+    <DataSpecification>
+        <Predictors>
+            <predictor>
+                <name>Sepal.Length</name>
+                <VariableType>numeric</VariableType>
+            </predictor>
+            <predictor>
+                <name>Sepal.Width</name>
+                <VariableType>numeric</VariableType>
+            </predictor>
+            <predictor>
+                <name>Petal.Length</name>
+                <VariableType>numeric</VariableType>
+            </predictor>
+            <predictor>
+                <name>Petal.Width</name>
+                <VariableType>numeric</VariableType>
+            </predictor>
+        </Predictors>
+        <predictedVariable>
+            <name>Species</name>
+            <VariableType>factor</VariableType>
+        </predictedVariable>
+    </DataSpecification>
+        
+    <Preprocessing>
+        <PreprocessMethod>center</PreprocessMethod>
+        <PreprocessMethod>scale</PreprocessMethod>
+        <PreprocessMethod>YeoJohnson</PreprocessMethod>
+    </Preprocessing>
+    
+    <Method>                
+        <StochasticGradientBoosting>
+            <maxTreeDepth>
+                <value>1</value>
+                <value>3</value>
+            </maxTreeDepth>
+            <numberTrees>
+                <value>3</value>
+            </numberTrees>
+            <shrinkage>
+                <value>0.2</value>
+            </shrinkage>
+            <minTerminalNodeSize>
+                <value>1</value>
+            </minTerminalNodeSize>
+        </StochasticGradientBoosting>
+    </Method>
+
+    <Evaluation>
+        <Metric>RMSE</Metric>
+        <DataSplit>
+            <partitionRate>0.5</partitionRate>
+        </DataSplit>
+        <Resampling>
+            <CrossValidation>
+                <numberSubsets>5</numberSubsets>
+                <repeats>6</repeats>
+            </CrossValidation>
+        </Resampling>    
+    </Evaluation>
+
+    <Plotting>
+        <Plot>
+            <filename>ValidationResults</filename>
+            <PlotType>plotValidationResults</PlotType>
+        </Plot>
+    </Plotting>
+    
+</Task>
